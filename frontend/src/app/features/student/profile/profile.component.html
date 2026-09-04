@@ -1,0 +1,102 @@
+<div class="max-w-4xl mx-auto">
+  <div class="mb-6 flex items-center justify-between">
+    <div>
+      <h1 class="text-2xl font-bold text-gray-900">Career Profile</h1>
+      <p class="text-sm text-gray-500">Manage your academic details and skills</p>
+    </div>
+  </div>
+
+  <div *ngIf="isLoading" class="animate-pulse space-y-4">
+    <div class="h-64 bg-gray-200 rounded-xl w-full"></div>
+  </div>
+
+  <div *ngIf="errorMessage" class="bg-red-50 border border-red-200 text-red-700 px-4 py-3 rounded mb-4">
+    {{ errorMessage }}
+  </div>
+
+  <div *ngIf="successMessage" class="bg-green-50 border border-green-200 text-green-700 px-4 py-3 rounded mb-4">
+    {{ successMessage }}
+  </div>
+
+  <form *ngIf="!isLoading && profileForm" [formGroup]="profileForm" (ngSubmit)="onSubmit()" class="space-y-6">
+    <div class="card p-6">
+      <h3 class="text-lg font-semibold text-gray-900 mb-4 border-b border-gray-100 pb-2">Academic Information</h3>
+      
+      <div class="grid grid-cols-1 md:grid-cols-2 gap-6">
+        <div>
+          <label class="block text-sm font-medium text-gray-700">Roll Number</label>
+          <input type="text" formControlName="roll_number" class="mt-1 block w-full border border-gray-300 rounded-md shadow-sm py-2 px-3 focus:outline-none focus:ring-primary-500 focus:border-primary-500 sm:text-sm bg-gray-50">
+        </div>
+        
+        <div>
+          <label class="block text-sm font-medium text-gray-700">Branch</label>
+          <input type="text" formControlName="branch" class="mt-1 block w-full border border-gray-300 rounded-md shadow-sm py-2 px-3 focus:outline-none focus:ring-primary-500 focus:border-primary-500 sm:text-sm bg-gray-50">
+        </div>
+        
+        <div>
+          <label class="block text-sm font-medium text-gray-700">Graduation Year</label>
+          <input type="number" formControlName="graduation_year" class="mt-1 block w-full border border-gray-300 rounded-md shadow-sm py-2 px-3 focus:outline-none focus:ring-primary-500 focus:border-primary-500 sm:text-sm bg-gray-50">
+        </div>
+
+        <div>
+          <label class="block text-sm font-medium text-gray-700">CGPA</label>
+          <input type="number" step="0.01" formControlName="cgpa" class="mt-1 block w-full border border-gray-300 rounded-md shadow-sm py-2 px-3 focus:outline-none focus:ring-primary-500 focus:border-primary-500 sm:text-sm bg-gray-50">
+        </div>
+
+        <div>
+          <label class="block text-sm font-medium text-gray-700">Active Backlogs</label>
+          <input type="number" formControlName="active_backlogs" class="mt-1 block w-full border border-gray-300 rounded-md shadow-sm py-2 px-3 focus:outline-none focus:ring-primary-500 focus:border-primary-500 sm:text-sm bg-gray-50">
+        </div>
+
+        <div>
+          <label class="block text-sm font-medium text-gray-700">Historical Backlogs</label>
+          <input type="number" formControlName="historical_backlogs" class="mt-1 block w-full border border-gray-300 rounded-md shadow-sm py-2 px-3 focus:outline-none focus:ring-primary-500 focus:border-primary-500 sm:text-sm bg-gray-50">
+        </div>
+      </div>
+    </div>
+
+    <div class="card p-6">
+      <h3 class="text-lg font-semibold text-gray-900 mb-4 border-b border-gray-100 pb-2">Additional Details</h3>
+      
+      <div class="grid grid-cols-1 md:grid-cols-2 gap-6">
+        <div>
+          <label class="block text-sm font-medium text-gray-700">10th Percentage</label>
+          <input type="number" step="0.1" formControlName="tenth_percentage" class="mt-1 block w-full border border-gray-300 rounded-md shadow-sm py-2 px-3 focus:outline-none focus:ring-primary-500 focus:border-primary-500 sm:text-sm">
+        </div>
+        
+        <div>
+          <label class="block text-sm font-medium text-gray-700">12th Percentage</label>
+          <input type="number" step="0.1" formControlName="twelfth_percentage" class="mt-1 block w-full border border-gray-300 rounded-md shadow-sm py-2 px-3 focus:outline-none focus:ring-primary-500 focus:border-primary-500 sm:text-sm">
+        </div>
+
+        <div class="md:col-span-2">
+          <label class="block text-sm font-medium text-gray-700">GitHub Username</label>
+          <div class="mt-1 flex rounded-md shadow-sm">
+            <span class="inline-flex items-center px-3 rounded-l-md border border-r-0 border-gray-300 bg-gray-50 text-gray-500 sm:text-sm">
+              github.com/
+            </span>
+            <input type="text" formControlName="github_username" class="flex-1 min-w-0 block w-full px-3 py-2 rounded-none rounded-r-md border border-gray-300 focus:outline-none focus:ring-primary-500 focus:border-primary-500 sm:text-sm">
+          </div>
+        </div>
+
+        <div class="md:col-span-2">
+          <label class="block text-sm font-medium text-gray-700">Resume Link (Google Drive, DropBox, etc.)</label>
+          <div class="mt-1">
+            <input type="url" formControlName="resume_url" placeholder="https://..." class="block w-full border border-gray-300 rounded-md shadow-sm py-2 px-3 focus:outline-none focus:ring-primary-500 focus:border-primary-500 sm:text-sm">
+          </div>
+          <p class="mt-1 text-xs text-gray-500">Provide a public link to your resume for recruiters to view.</p>
+        </div>
+      </div>
+    </div>
+
+    <div class="flex justify-end space-x-3">
+      <button type="button" routerLink="/student/dashboard" class="px-4 py-2 border border-gray-300 shadow-sm text-sm font-medium rounded-md text-gray-700 bg-white hover:bg-gray-50 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-primary-500">
+        Cancel
+      </button>
+      <button type="submit" [disabled]="profileForm.invalid || isSaving" class="btn-primary flex items-center justify-center">
+        <svg *ngIf="isSaving" class="animate-spin -ml-1 mr-2 h-4 w-4 text-white" fill="none" viewBox="0 0 24 24"><circle class="opacity-25" cx="12" cy="12" r="10" stroke="currentColor" stroke-width="4"></circle><path class="opacity-75" fill="currentColor" d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4zm2 5.291A7.962 7.962 0 014 12H0c0 3.042 1.135 5.824 3 7.938l3-2.647z"></path></svg>
+        {{ isSaving ? 'Saving...' : 'Save Profile' }}
+      </button>
+    </div>
+  </form>
+</div>

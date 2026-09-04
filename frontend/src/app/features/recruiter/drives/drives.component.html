@@ -1,0 +1,145 @@
+<div class="max-w-6xl mx-auto space-y-6">
+  <div class="flex items-center justify-between">
+    <div>
+      <h1 class="text-2xl font-bold text-gray-900">Our Placement Drives</h1>
+      <p class="text-sm text-gray-500">Manage your company's recruitment drives</p>
+    </div>
+    <button *ngIf="!showCreateForm" (click)="showCreateForm = true" class="btn-primary flex items-center space-x-2">
+      <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 4v16m8-8H4"></path></svg>
+      <span>New Drive</span>
+    </button>
+  </div>
+
+  <div *ngIf="errorMessage" class="bg-red-50 text-red-700 p-3 rounded text-sm">
+    {{ errorMessage }}
+  </div>
+
+  <!-- Create Form -->
+  <div *ngIf="showCreateForm" class="card p-6 border border-gray-200">
+    <h3 class="text-lg font-semibold text-gray-900 mb-4 border-b border-gray-100 pb-2">Create New Drive</h3>
+    <form [formGroup]="driveForm" (ngSubmit)="onSubmit()" class="space-y-6">
+      
+      <div class="grid grid-cols-1 md:grid-cols-2 gap-6">
+        <div>
+          <label class="block text-sm font-medium text-gray-700">Job Title</label>
+          <input type="text" formControlName="job_title" class="mt-1 block w-full border border-gray-300 rounded-md shadow-sm py-2 px-3 focus:outline-none focus:ring-primary-500 focus:border-primary-500 sm:text-sm">
+        </div>
+        
+        <div>
+          <label class="block text-sm font-medium text-gray-700">Job Type</label>
+          <select formControlName="job_type" class="mt-1 block w-full border border-gray-300 rounded-md shadow-sm py-2 px-3 focus:outline-none focus:ring-primary-500 focus:border-primary-500 sm:text-sm">
+            <option value="Full Time">Full Time</option>
+            <option value="Internship">Internship</option>
+          </select>
+        </div>
+
+        <div>
+          <label class="block text-sm font-medium text-gray-700">CTC (in LPA)</label>
+          <input type="number" step="0.1" formControlName="ctc" class="mt-1 block w-full border border-gray-300 rounded-md shadow-sm py-2 px-3 focus:outline-none focus:ring-primary-500 focus:border-primary-500 sm:text-sm">
+        </div>
+
+        <div>
+          <label class="block text-sm font-medium text-gray-700">Location</label>
+          <input type="text" formControlName="location" class="mt-1 block w-full border border-gray-300 rounded-md shadow-sm py-2 px-3 focus:outline-none focus:ring-primary-500 focus:border-primary-500 sm:text-sm">
+        </div>
+
+        <div>
+          <label class="block text-sm font-medium text-gray-700">Registration Deadline</label>
+          <input type="datetime-local" formControlName="registration_deadline" class="mt-1 block w-full border border-gray-300 rounded-md shadow-sm py-2 px-3 focus:outline-none focus:ring-primary-500 focus:border-primary-500 sm:text-sm">
+        </div>
+
+        <div class="md:col-span-2">
+          <label class="block text-sm font-medium text-gray-700">Job Description</label>
+          <textarea rows="3" formControlName="job_description" class="mt-1 block w-full border border-gray-300 rounded-md shadow-sm py-2 px-3 focus:outline-none focus:ring-primary-500 focus:border-primary-500 sm:text-sm"></textarea>
+        </div>
+      </div>
+
+      <h4 class="text-md font-medium text-gray-800 mt-6 mb-3">Eligibility Criteria</h4>
+      <div class="grid grid-cols-1 md:grid-cols-4 gap-4">
+        <div>
+          <label class="block text-xs font-medium text-gray-700">Min CGPA</label>
+          <input type="number" step="0.1" formControlName="min_cgpa" class="mt-1 block w-full border border-gray-300 rounded-md shadow-sm py-1.5 px-3 focus:outline-none focus:ring-primary-500 sm:text-sm">
+        </div>
+        <div>
+          <label class="block text-xs font-medium text-gray-700">Max Active Backlogs</label>
+          <input type="number" formControlName="max_active_backlogs" class="mt-1 block w-full border border-gray-300 rounded-md shadow-sm py-1.5 px-3 focus:outline-none focus:ring-primary-500 sm:text-sm">
+        </div>
+        <div>
+          <label class="block text-xs font-medium text-gray-700">Max Historical Backlogs</label>
+          <input type="number" formControlName="max_historical_backlogs" class="mt-1 block w-full border border-gray-300 rounded-md shadow-sm py-1.5 px-3 focus:outline-none focus:ring-primary-500 sm:text-sm">
+        </div>
+        <div>
+          <label class="block text-xs font-medium text-gray-700">Allowed Branches</label>
+          <input type="text" placeholder="CSE,IT,ECE" formControlName="allowed_branches" class="mt-1 block w-full border border-gray-300 rounded-md shadow-sm py-1.5 px-3 focus:outline-none focus:ring-primary-500 sm:text-sm">
+        </div>
+      </div>
+
+      <div class="flex justify-end space-x-3 border-t border-gray-100 pt-4">
+        <button type="button" (click)="showCreateForm = false" class="px-4 py-2 border border-gray-300 shadow-sm text-sm font-medium rounded-md text-gray-700 bg-white hover:bg-gray-50 focus:outline-none">
+          Cancel
+        </button>
+        <button type="submit" [disabled]="driveForm.invalid || isSaving" class="btn-primary flex items-center">
+          <svg *ngIf="isSaving" class="animate-spin -ml-1 mr-2 h-4 w-4 text-white" fill="none" viewBox="0 0 24 24"><circle class="opacity-25" cx="12" cy="12" r="10" stroke="currentColor" stroke-width="4"></circle><path class="opacity-75" fill="currentColor" d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4zm2 5.291A7.962 7.962 0 014 12H0c0 3.042 1.135 5.824 3 7.938l3-2.647z"></path></svg>
+          {{ isSaving ? 'Creating...' : 'Create Drive' }}
+        </button>
+      </div>
+    </form>
+  </div>
+
+  <!-- Drives List -->
+  <div *ngIf="isLoading" class="animate-pulse flex space-x-4">
+    <div class="h-10 bg-gray-200 rounded w-full"></div>
+  </div>
+
+  <div *ngIf="!isLoading && drives.length === 0 && !showCreateForm" class="text-center py-10 bg-white rounded-xl shadow-sm border border-gray-100">
+    <svg class="mx-auto h-12 w-12 text-gray-400" fill="none" viewBox="0 0 24 24" stroke="currentColor"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M20 13V6a2 2 0 00-2-2H6a2 2 0 00-2 2v7m16 0v5a2 2 0 01-2 2H6a2 2 0 01-2-2v-5m16 0h-2.586a1 1 0 00-.707.293l-2.414 2.414a1 1 0 01-.707.293h-3.172a1 1 0 01-.707-.293l-2.414-2.414A1 1 0 006.586 13H4"></path></svg>
+    <h3 class="mt-2 text-sm font-semibold text-gray-900">No drives found</h3>
+    <p class="mt-1 text-sm text-gray-500">Get started by creating a new placement drive.</p>
+    <div class="mt-6">
+      <button (click)="showCreateForm = true" class="btn-primary inline-flex items-center">
+        <svg class="w-4 h-4 mr-2" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 4v16m8-8H4"></path></svg>
+        New Drive
+      </button>
+    </div>
+  </div>
+
+  <div *ngIf="!isLoading && drives.length > 0" class="overflow-hidden bg-white shadow-sm rounded-xl border border-gray-200">
+    <table class="min-w-full divide-y divide-gray-200">
+      <thead class="bg-gray-50">
+        <tr>
+          <th scope="col" class="px-6 py-3 text-left text-xs font-semibold text-gray-500 uppercase tracking-wider">Job Title</th>
+          <th scope="col" class="px-6 py-3 text-left text-xs font-semibold text-gray-500 uppercase tracking-wider">Type & CTC</th>
+          <th scope="col" class="px-6 py-3 text-left text-xs font-semibold text-gray-500 uppercase tracking-wider">Eligibility</th>
+          <th scope="col" class="px-6 py-3 text-left text-xs font-semibold text-gray-500 uppercase tracking-wider">Status</th>
+          <th scope="col" class="px-6 py-3 text-right text-xs font-semibold text-gray-500 uppercase tracking-wider">Actions</th>
+        </tr>
+      </thead>
+      <tbody class="bg-white divide-y divide-gray-200">
+        <tr *ngFor="let d of drives" class="hover:bg-gray-50">
+          <td class="px-6 py-4 whitespace-nowrap">
+            <div class="text-sm font-bold text-gray-900">{{ d.job_title }}</div>
+            <div class="text-xs text-gray-500">{{ d.location }}</div>
+          </td>
+          <td class="px-6 py-4 whitespace-nowrap">
+            <div class="text-sm text-gray-900">{{ d.job_type }}</div>
+            <div class="text-xs font-semibold text-green-600">{{ d.ctc }} LPA</div>
+          </td>
+          <td class="px-6 py-4 whitespace-nowrap">
+            <div class="text-xs text-gray-600">CGPA: {{ d.min_cgpa }}+</div>
+            <div class="text-xs text-gray-600">Backlogs: {{ d.max_active_backlogs }} active</div>
+          </td>
+          <td class="px-6 py-4 whitespace-nowrap">
+            <span class="px-2 inline-flex text-xs leading-5 font-semibold rounded-full" 
+                  [ngClass]="{'bg-yellow-100 text-yellow-800': d.status === 'DRAFT', 'bg-blue-100 text-blue-800': d.status === 'PUBLISHED', 'bg-green-100 text-green-800': d.status === 'COMPLETED'}">
+              {{ d.status }}
+            </span>
+          </td>
+          <td class="px-6 py-4 whitespace-nowrap text-right text-sm font-medium">
+            <a href="#" class="text-primary-600 hover:text-primary-900 mx-2">Edit</a>
+            <a *ngIf="d.status === 'DRAFT'" href="#" class="text-green-600 hover:text-green-900 mx-2">Publish</a>
+          </td>
+        </tr>
+      </tbody>
+    </table>
+  </div>
+</div>

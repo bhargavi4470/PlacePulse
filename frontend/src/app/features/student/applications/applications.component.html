@@ -1,0 +1,78 @@
+<div class="max-w-5xl mx-auto space-y-6">
+  <div class="flex items-center justify-between">
+    <div>
+      <h1 class="text-2xl font-bold text-gray-900">Applications Tracker</h1>
+      <p class="text-sm text-gray-500">Track the status of your placement applications</p>
+    </div>
+  </div>
+
+  <div *ngIf="isLoading" class="animate-pulse space-y-4">
+    <div class="h-16 bg-gray-200 rounded-xl w-full"></div>
+    <div class="h-16 bg-gray-200 rounded-xl w-full"></div>
+  </div>
+
+  <div *ngIf="errorMessage" class="bg-red-50 text-red-700 p-3 rounded text-sm">
+    {{ errorMessage }}
+  </div>
+
+  <div *ngIf="!isLoading && applications.length === 0" class="text-center py-10 bg-white rounded-xl shadow-sm border border-gray-100">
+    <svg class="mx-auto h-12 w-12 text-gray-400" fill="none" viewBox="0 0 24 24" stroke="currentColor"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 12h6m-6 4h6m2 5H7a2 2 0 01-2-2V5a2 2 0 012-2h5.586a1 1 0 01.707.293l5.414 5.414a1 1 0 01.293.707V19a2 2 0 01-2 2z"></path></svg>
+    <h3 class="mt-2 text-sm font-semibold text-gray-900">No applications found</h3>
+    <p class="mt-1 text-sm text-gray-500">You haven't applied to any placement drives yet.</p>
+  </div>
+
+  <div *ngIf="!isLoading && applications.length > 0" class="bg-white shadow-sm rounded-xl border border-gray-200 overflow-hidden">
+    <ul class="divide-y divide-gray-200">
+      <li *ngFor="let app of applications" class="p-6 hover:bg-gray-50 transition-colors">
+        <div class="flex items-center justify-between">
+          <div class="flex-1 min-w-0">
+            <h4 class="text-lg font-bold text-gray-900 truncate">{{ app.job_title }}</h4>
+            <p class="text-sm text-gray-500 mt-1 flex items-center">
+              <svg class="w-4 h-4 mr-1.5 text-gray-400" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 21V5a2 2 0 00-2-2H7a2 2 0 00-2 2v16m14 0h2m-2 0h-5m-9 0H3m2 0h5M9 7h1m-1 4h1m4-4h1m-1 4h1m-5 10v-5a1 1 0 011-1h2a1 1 0 011 1v5m-4 0h4"></path></svg>
+              {{ app.company }}
+            </p>
+          </div>
+          <div class="flex flex-col items-end ml-4">
+            <span class="px-3 py-1 inline-flex text-xs leading-5 font-semibold rounded-full"
+                  [ngClass]="{
+                    'bg-blue-100 text-blue-800': app.status === 'APPLIED',
+                    'bg-yellow-100 text-yellow-800': app.status === 'SHORTLISTED',
+                    'bg-purple-100 text-purple-800': app.status === 'ASSESSMENT',
+                    'bg-indigo-100 text-indigo-800': app.status === 'INTERVIEW',
+                    'bg-green-100 text-green-800': app.status === 'OFFERED',
+                    'bg-red-100 text-red-800': app.status === 'REJECTED'
+                  }">
+              {{ app.status }}
+            </span>
+            <span class="text-xs text-gray-400 mt-2">Applied: {{ app.applied_at | date:'mediumDate' }}</span>
+          </div>
+        </div>
+        
+        <!-- Pipeline Progress Bar -->
+        <div class="mt-6 relative">
+          <div class="overflow-hidden h-2 mb-4 text-xs flex rounded-full bg-gray-200">
+            <div [style.width]="
+              app.status === 'REJECTED' ? '100%' :
+              app.status === 'APPLIED' ? '20%' :
+              app.status === 'SHORTLISTED' ? '40%' :
+              app.status === 'ASSESSMENT' ? '60%' :
+              app.status === 'INTERVIEW' ? '80%' :
+              app.status === 'OFFERED' ? '100%' : '0%'
+            " 
+            class="shadow-none flex flex-col text-center whitespace-nowrap text-white justify-center"
+            [ngClass]="app.status === 'REJECTED' ? 'bg-red-500' : 'bg-primary-500'">
+            </div>
+          </div>
+          <div class="flex justify-between text-xs text-gray-500 font-medium px-1">
+            <span [ngClass]="{'text-primary-700': app.status !== 'REJECTED', 'text-red-600': app.status === 'REJECTED'}">Applied</span>
+            <span [ngClass]="{'text-primary-700': app.status === 'SHORTLISTED' || app.status === 'ASSESSMENT' || app.status === 'INTERVIEW' || app.status === 'OFFERED'}">Shortlisted</span>
+            <span [ngClass]="{'text-primary-700': app.status === 'ASSESSMENT' || app.status === 'INTERVIEW' || app.status === 'OFFERED'}">Assessment</span>
+            <span [ngClass]="{'text-primary-700': app.status === 'INTERVIEW' || app.status === 'OFFERED'}">Interview</span>
+            <span [ngClass]="{'text-green-600': app.status === 'OFFERED'}">Offered</span>
+          </div>
+        </div>
+
+      </li>
+    </ul>
+  </div>
+</div>

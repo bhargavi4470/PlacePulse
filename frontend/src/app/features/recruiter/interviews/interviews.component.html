@@ -1,0 +1,119 @@
+<div class="max-w-6xl mx-auto space-y-6">
+  <div class="flex items-center justify-between">
+    <div>
+      <h1 class="text-2xl font-bold text-gray-900">Interview Operations</h1>
+      <p class="text-sm text-gray-500">Schedule and manage candidate interviews</p>
+    </div>
+    <button *ngIf="!showScheduleForm" (click)="showScheduleForm = true" class="btn-primary flex items-center space-x-2">
+      <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 4v16m8-8H4"></path></svg>
+      <span>Schedule Interview</span>
+    </button>
+  </div>
+
+  <div *ngIf="errorMessage" class="bg-red-50 text-red-700 p-3 rounded text-sm">
+    {{ errorMessage }}
+  </div>
+
+  <!-- Schedule Form -->
+  <div *ngIf="showScheduleForm" class="card p-6 border border-gray-200">
+    <h3 class="text-lg font-semibold text-gray-900 mb-4 border-b border-gray-100 pb-2">Schedule New Interview</h3>
+    <form [formGroup]="scheduleForm" (ngSubmit)="onSubmit()" class="space-y-6">
+      
+      <div class="grid grid-cols-1 md:grid-cols-2 gap-6">
+        <div>
+          <label class="block text-sm font-medium text-gray-700">Candidate (Active Pipeline)</label>
+          <select formControlName="application_id" class="mt-1 block w-full border border-gray-300 rounded-md shadow-sm py-2 px-3 focus:outline-none focus:ring-primary-500 focus:border-primary-500 sm:text-sm">
+            <option value="">-- Select Candidate --</option>
+            <option *ngFor="let app of applications" [value]="app.id">
+              {{ app.student_name }} ({{ app.roll_number }}) - {{ app.job_title }}
+            </option>
+          </select>
+        </div>
+        
+        <div>
+          <label class="block text-sm font-medium text-gray-700">Round Name</label>
+          <select formControlName="round_name" class="mt-1 block w-full border border-gray-300 rounded-md shadow-sm py-2 px-3 focus:outline-none focus:ring-primary-500 focus:border-primary-500 sm:text-sm">
+            <option value="Online Assessment">Online Assessment</option>
+            <option value="Technical Round 1">Technical Round 1</option>
+            <option value="Technical Round 2">Technical Round 2</option>
+            <option value="HR Round">HR Round</option>
+            <option value="Managerial Round">Managerial Round</option>
+          </select>
+        </div>
+
+        <div>
+          <label class="block text-sm font-medium text-gray-700">Scheduled Time</label>
+          <input type="datetime-local" formControlName="scheduled_time" class="mt-1 block w-full border border-gray-300 rounded-md shadow-sm py-2 px-3 focus:outline-none focus:ring-primary-500 focus:border-primary-500 sm:text-sm">
+        </div>
+
+        <div>
+          <label class="block text-sm font-medium text-gray-700">Meeting Link (Optional)</label>
+          <input type="url" placeholder="https://teams.microsoft.com/..." formControlName="meeting_link" class="mt-1 block w-full border border-gray-300 rounded-md shadow-sm py-2 px-3 focus:outline-none focus:ring-primary-500 focus:border-primary-500 sm:text-sm">
+        </div>
+      </div>
+
+      <div class="flex justify-end space-x-3 border-t border-gray-100 pt-4">
+        <button type="button" (click)="showScheduleForm = false" class="px-4 py-2 border border-gray-300 shadow-sm text-sm font-medium rounded-md text-gray-700 bg-white hover:bg-gray-50 focus:outline-none">
+          Cancel
+        </button>
+        <button type="submit" [disabled]="scheduleForm.invalid || isSaving" class="btn-primary flex items-center">
+          <svg *ngIf="isSaving" class="animate-spin -ml-1 mr-2 h-4 w-4 text-white" fill="none" viewBox="0 0 24 24"><circle class="opacity-25" cx="12" cy="12" r="10" stroke="currentColor" stroke-width="4"></circle></svg>
+          {{ isSaving ? 'Scheduling...' : 'Schedule' }}
+        </button>
+      </div>
+    </form>
+  </div>
+
+  <!-- Interviews List -->
+  <div *ngIf="isLoading" class="animate-pulse flex space-x-4">
+    <div class="h-24 bg-gray-200 rounded-xl w-full"></div>
+  </div>
+
+  <div *ngIf="!isLoading && interviews.length === 0 && !showScheduleForm" class="text-center py-10 bg-white rounded-xl shadow-sm border border-gray-100">
+    <svg class="mx-auto h-12 w-12 text-gray-400" fill="none" viewBox="0 0 24 24" stroke="currentColor"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M8 7V3m8 4V3m-9 8h10M5 21h14a2 2 0 002-2V7a2 2 0 00-2-2H5a2 2 0 00-2 2v12a2 2 0 002 2z"></path></svg>
+    <h3 class="mt-2 text-sm font-semibold text-gray-900">No interviews found</h3>
+    <p class="mt-1 text-sm text-gray-500">You haven't scheduled any interviews yet.</p>
+  </div>
+
+  <div *ngIf="!isLoading && interviews.length > 0" class="bg-white shadow-sm rounded-xl border border-gray-200 overflow-hidden">
+    <table class="min-w-full divide-y divide-gray-200">
+      <thead class="bg-gray-50">
+        <tr>
+          <th scope="col" class="px-6 py-3 text-left text-xs font-semibold text-gray-500 uppercase tracking-wider">Candidate & Role</th>
+          <th scope="col" class="px-6 py-3 text-left text-xs font-semibold text-gray-500 uppercase tracking-wider">Round details</th>
+          <th scope="col" class="px-6 py-3 text-left text-xs font-semibold text-gray-500 uppercase tracking-wider">Meeting</th>
+          <th scope="col" class="px-6 py-3 text-left text-xs font-semibold text-gray-500 uppercase tracking-wider">Verdict</th>
+        </tr>
+      </thead>
+      <tbody class="bg-white divide-y divide-gray-200">
+        <tr *ngFor="let i of interviews" class="hover:bg-gray-50 transition-colors">
+          <td class="px-6 py-4 whitespace-nowrap">
+            <div class="text-sm font-bold text-gray-900">{{ i.student_name }}</div>
+            <div class="text-xs text-gray-500">{{ i.job_title }}</div>
+          </td>
+          <td class="px-6 py-4 whitespace-nowrap">
+            <div class="text-sm font-semibold text-gray-800">{{ i.round_name }}</div>
+            <div class="text-xs text-gray-500">{{ i.scheduled_time | date:'medium' }}</div>
+          </td>
+          <td class="px-6 py-4 whitespace-nowrap text-sm">
+            <a *ngIf="i.meeting_link" [href]="i.meeting_link" target="_blank" class="text-blue-600 hover:underline">Link</a>
+            <span *ngIf="!i.meeting_link" class="text-gray-400">N/A</span>
+          </td>
+          <td class="px-6 py-4 whitespace-nowrap">
+            <select class="block w-full border-gray-300 rounded shadow-sm py-1 px-2 focus:ring-primary-500 focus:border-primary-500 text-xs font-semibold"
+                    [ngModel]="i.verdict" (ngModelChange)="updateVerdict(i.id, $event)"
+                    [ngClass]="{
+                      'bg-blue-50 text-blue-800': i.verdict === 'PENDING',
+                      'bg-green-50 text-green-800': i.verdict === 'PASSED',
+                      'bg-red-50 text-red-800': i.verdict === 'FAILED'
+                    }">
+              <option value="PENDING">PENDING</option>
+              <option value="PASSED">PASSED</option>
+              <option value="FAILED">FAILED</option>
+            </select>
+          </td>
+        </tr>
+      </tbody>
+    </table>
+  </div>
+</div>

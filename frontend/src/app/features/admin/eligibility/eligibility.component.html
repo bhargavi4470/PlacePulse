@@ -1,0 +1,145 @@
+<div class="max-w-5xl mx-auto space-y-6">
+  
+  <div class="flex items-center justify-between">
+    <div>
+      <h1 class="text-2xl font-bold text-gray-900">Eligibility Engine Studio</h1>
+      <p class="text-sm text-gray-500">Evaluate students against placement drive criteria</p>
+    </div>
+  </div>
+
+  <div class="card p-6">
+    <div class="grid grid-cols-1 md:grid-cols-2 gap-6 mb-6">
+      <!-- Student Selection -->
+      <div>
+        <label class="block text-sm font-medium text-gray-700 mb-2">Select Student</label>
+        <select [(ngModel)]="selectedStudentId" class="block w-full border border-gray-300 rounded-md shadow-sm py-2 px-3 focus:outline-none focus:ring-primary-500 focus:border-primary-500 sm:text-sm">
+          <option [ngValue]="null">-- Choose a student --</option>
+          <option *ngFor="let s of students" [ngValue]="s.id">
+            {{ s.roll_number }} - {{ s.name }} ({{ s.branch }}, CGPA: {{ s.cgpa }})
+          </option>
+        </select>
+      </div>
+
+      <!-- Drive Selection -->
+      <div>
+        <label class="block text-sm font-medium text-gray-700 mb-2">Select Placement Drive</label>
+        <select [(ngModel)]="selectedDriveId" class="block w-full border border-gray-300 rounded-md shadow-sm py-2 px-3 focus:outline-none focus:ring-primary-500 focus:border-primary-500 sm:text-sm">
+          <option [ngValue]="null">-- Choose a drive --</option>
+          <option *ngFor="let d of drives" [ngValue]="d.id">
+            {{ d.company }} - {{ d.title }} [{{ d.status }}]
+          </option>
+        </select>
+      </div>
+    </div>
+
+    <div *ngIf="errorMessage" class="bg-red-50 text-red-700 p-3 rounded mb-4 text-sm">
+      {{ errorMessage }}
+    </div>
+
+    <div class="flex justify-end border-t border-gray-100 pt-4">
+      <button (click)="evaluate()" [disabled]="isLoading" class="btn-primary flex items-center justify-center min-w-[150px]">
+        <svg *ngIf="isLoading" class="animate-spin -ml-1 mr-2 h-4 w-4 text-white" fill="none" viewBox="0 0 24 24"><circle class="opacity-25" cx="12" cy="12" r="10" stroke="currentColor" stroke-width="4"></circle><path class="opacity-75" fill="currentColor" d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4zm2 5.291A7.962 7.962 0 014 12H0c0 3.042 1.135 5.824 3 7.938l3-2.647z"></path></svg>
+        {{ isLoading ? 'Evaluating...' : 'Evaluate Rules' }}
+      </button>
+    </div>
+  </div>
+
+  <!-- Results Section -->
+  <div *ngIf="evaluationResult" class="space-y-6">
+    
+    <!-- Verdict Banner -->
+    <div class="rounded-lg p-6 border-2 flex items-center justify-between shadow-sm"
+         [ngClass]="{
+           'bg-green-50 border-green-200': evaluationResult.verdict === 'ELIGIBLE',
+           'bg-red-50 border-red-200': evaluationResult.verdict === 'INELIGIBLE',
+           'bg-yellow-50 border-yellow-200': evaluationResult.verdict === 'CONDITIONAL'
+         }">
+      <div>
+        <h2 class="text-lg font-bold"
+            [ngClass]="{
+              'text-green-800': evaluationResult.verdict === 'ELIGIBLE',
+              'text-red-800': evaluationResult.verdict === 'INELIGIBLE',
+              'text-yellow-800': evaluationResult.verdict === 'CONDITIONAL'
+            }">
+          Verdict: {{ evaluationResult.verdict }}
+        </h2>
+        <p class="text-sm mt-1"
+           [ngClass]="{
+             'text-green-600': evaluationResult.verdict === 'ELIGIBLE',
+             'text-red-600': evaluationResult.verdict === 'INELIGIBLE',
+             'text-yellow-700': evaluationResult.verdict === 'CONDITIONAL'
+           }">
+          {{ evaluationResult.student_name }} ({{ evaluationResult.roll_number }}) for {{ evaluationResult.drive_name }}
+        </p>
+      </div>
+      <div class="h-12 w-12 rounded-full flex items-center justify-center"
+           [ngClass]="{
+             'bg-green-100 text-green-600': evaluationResult.verdict === 'ELIGIBLE',
+             'bg-red-100 text-red-600': evaluationResult.verdict === 'INELIGIBLE',
+             'bg-yellow-100 text-yellow-600': evaluationResult.verdict === 'CONDITIONAL'
+           }">
+        <!-- Check icon -->
+        <svg *ngIf="evaluationResult.verdict === 'ELIGIBLE'" class="w-8 h-8" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M5 13l4 4L19 7"></path></svg>
+        <!-- X icon -->
+        <svg *ngIf="evaluationResult.verdict === 'INELIGIBLE'" class="w-8 h-8" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M6 18L18 6M6 6l12 12"></path></svg>
+        <!-- Warning icon -->
+        <svg *ngIf="evaluationResult.verdict === 'CONDITIONAL'" class="w-8 h-8" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 9v2m0 4h.01m-6.938 4h13.856c1.54 0 2.502-1.667 1.732-3L13.732 4c-.77-1.333-2.694-1.333-3.464 0L3.34 16c-.77 1.333.192 3 1.732 3z"></path></svg>
+      </div>
+    </div>
+
+    <!-- Rules Breakdown -->
+    <div class="grid grid-cols-1 lg:grid-cols-2 gap-6">
+      
+      <!-- Passed Rules -->
+      <div class="card p-0 overflow-hidden border-t-4 border-t-green-500">
+        <div class="bg-gray-50 px-4 py-3 border-b border-gray-100 flex justify-between items-center">
+          <h3 class="font-semibold text-gray-800">Passed Criteria</h3>
+          <span class="bg-green-100 text-green-800 text-xs font-bold px-2 py-0.5 rounded-full">{{ evaluationResult.rules_passed.length }}</span>
+        </div>
+        <ul class="divide-y divide-gray-100">
+          <li *ngIf="evaluationResult.rules_passed.length === 0" class="px-4 py-6 text-center text-sm text-gray-500">
+            No rules passed.
+          </li>
+          <li *ngFor="let rule of evaluationResult.rules_passed" class="p-4 flex items-start space-x-3 hover:bg-gray-50">
+            <svg class="w-5 h-5 text-green-500 flex-shrink-0 mt-0.5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 12l2 2 4-4m6 2a9 9 0 11-18 0 9 9 0 0118 0z"></path></svg>
+            <div>
+              <p class="text-sm font-semibold text-gray-900">{{ rule.rule }}</p>
+              <div class="text-xs text-gray-500 mt-1 flex space-x-4">
+                <span>Required: <strong class="text-gray-700">{{ rule.required }}</strong></span>
+                <span>Actual: <strong class="text-green-700">{{ rule.actual }}</strong></span>
+              </div>
+            </div>
+          </li>
+        </ul>
+      </div>
+
+      <!-- Failed Rules -->
+      <div class="card p-0 overflow-hidden border-t-4 border-t-red-500">
+        <div class="bg-gray-50 px-4 py-3 border-b border-gray-100 flex justify-between items-center">
+          <h3 class="font-semibold text-gray-800">Failed Criteria</h3>
+          <span class="bg-red-100 text-red-800 text-xs font-bold px-2 py-0.5 rounded-full">{{ evaluationResult.rules_failed.length }}</span>
+        </div>
+        <ul class="divide-y divide-gray-100">
+          <li *ngIf="evaluationResult.rules_failed.length === 0" class="px-4 py-6 text-center text-sm text-gray-500">
+            No rules failed! Perfect match.
+          </li>
+          <li *ngFor="let rule of evaluationResult.rules_failed" class="p-4 flex items-start space-x-3 hover:bg-red-50 transition-colors">
+            <svg class="w-5 h-5 text-red-500 flex-shrink-0 mt-0.5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M10 14l2-2m0 0l2-2m-2 2l-2-2m2 2l2 2m7-2a9 9 0 11-18 0 9 9 0 0118 0z"></path></svg>
+            <div>
+              <p class="text-sm font-semibold text-gray-900">{{ rule.rule }}</p>
+              <div class="text-xs mt-1 space-y-1">
+                <p class="text-red-700">{{ rule.explanation }}</p>
+                <div class="flex space-x-4 text-gray-500">
+                  <span>Required: <strong class="text-gray-700">{{ rule.required }}</strong></span>
+                  <span>Actual: <strong class="text-red-700">{{ rule.actual }}</strong></span>
+                </div>
+              </div>
+            </div>
+          </li>
+        </ul>
+      </div>
+
+    </div>
+  </div>
+
+</div>

@@ -1,0 +1,130 @@
+<div class="max-w-7xl mx-auto space-y-6">
+
+  <!-- Loading State -->
+  <div *ngIf="isLoading" class="animate-pulse space-y-6">
+    <div class="h-32 bg-gray-200 rounded-xl w-full"></div>
+    <div class="grid grid-cols-1 md:grid-cols-4 gap-4">
+      <div class="h-24 bg-gray-200 rounded-xl"></div>
+      <div class="h-24 bg-gray-200 rounded-xl"></div>
+      <div class="h-24 bg-gray-200 rounded-xl"></div>
+    </div>
+  </div>
+
+  <!-- Error State -->
+  <div *ngIf="errorMessage" class="bg-red-50 border border-red-200 text-red-700 px-4 py-3 rounded relative" role="alert">
+    <strong class="font-bold">Error!</strong>
+    <span class="block sm:inline ml-2">{{ errorMessage }}</span>
+  </div>
+
+  <!-- Data View -->
+  <ng-container *ngIf="!isLoading && dashboardData">
+    <!-- Profile Header Card -->
+    <div class="card flex flex-col md:flex-row md:items-center justify-between">
+      <div class="flex items-center space-x-6">
+        <div class="w-24 h-24 rounded-2xl bg-gray-200 border-4 border-white shadow-md overflow-hidden relative">
+          <svg class="w-full h-full text-gray-400" fill="currentColor" viewBox="0 0 24 24"><path d="M24 20.993V24H0v-2.996A14.977 14.977 0 0112.004 15c4.904 0 9.26 2.354 11.996 5.993zM16.002 8.999a4 4 0 11-8 0 4 4 0 018 0z" /></svg>
+          <div class="absolute bottom-1 right-1 bg-primary-600 text-white rounded-full p-1 border-2 border-white">
+            <svg class="w-3 h-3" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 12l2 2 4-4m6 2a9 9 0 11-18 0 9 9 0 0118 0z"></path></svg>
+          </div>
+        </div>
+        
+        <div>
+          <div class="flex items-center space-x-3 mb-1">
+            <h1 class="text-2xl font-bold text-gray-900">{{ dashboardData.profile.full_name }}</h1>
+            <span class="badge-blue flex items-center space-x-1">
+              <svg class="w-3 h-3" fill="currentColor" viewBox="0 0 20 20"><path fill-rule="evenodd" d="M2.166 4.999A11.954 11.954 0 0010 1.944 11.954 11.954 0 0017.834 5c.11.65.166 1.32.166 2.001 0 5.225-3.34 9.67-8 11.317C5.34 16.67 2 12.225 2 7c0-.682.057-1.35.166-2.001zm11.541 3.708a1 1 0 00-1.414-1.414L9 10.586 7.707 9.293a1 1 0 00-1.414 1.414l2 2a1 1 0 001.414 0l4-4z" clip-rule="evenodd"></path></svg>
+              <span>VERIFIED REGISTRY</span>
+            </span>
+          </div>
+          <div class="flex items-center space-x-2 text-sm text-gray-600 mb-3">
+            <span class="bg-blue-50 text-primary-700 px-2 py-0.5 rounded text-xs font-semibold">Tier-1 Scholar</span>
+            <span>B.Tech {{ dashboardData.profile.branch }}</span>
+            <span>•</span>
+            <span>Batch of {{ dashboardData.profile.graduation_year }}</span>
+            <span>•</span>
+            <span>Reg ID: {{ dashboardData.profile.roll_number }}</span>
+          </div>
+          <div class="flex items-center space-x-6 text-sm">
+            <div class="flex items-center space-x-2 bg-gray-50 px-3 py-1.5 rounded-lg border border-gray-100">
+              <span class="text-gray-500 font-medium">CGPA</span>
+              <span class="text-primary-600 font-bold text-lg">{{ dashboardData.profile.cgpa }}</span>
+            </div>
+            <div class="flex items-center space-x-2">
+              <span class="text-gray-500 font-medium text-xs uppercase">Backlogs</span>
+              <span class="text-gray-900 font-bold">{{ dashboardData.profile.active_backlogs }} Active</span>
+            </div>
+          </div>
+        </div>
+      </div>
+      
+      <div class="mt-6 md:mt-0 flex items-center space-x-6 pl-6 border-l border-gray-100">
+        <div class="flex items-center space-x-4">
+          <div class="relative w-16 h-16">
+            <svg class="w-16 h-16 transform -rotate-90">
+              <circle cx="32" cy="32" r="28" stroke="currentColor" stroke-width="6" fill="transparent" class="text-gray-100"/>
+              <!-- Calculate stroke-dashoffset based on profile readiness -->
+              <circle cx="32" cy="32" r="28" stroke="currentColor" stroke-width="6" fill="transparent" stroke-dasharray="175.9" [attr.stroke-dashoffset]="175.9 - (175.9 * dashboardData.profile.profile_readiness / 100)" class="text-primary-600"/>
+            </svg>
+            <div class="absolute inset-0 flex flex-col items-center justify-center">
+              <span class="text-lg font-bold text-gray-900 leading-none">{{ dashboardData.profile.profile_readiness }}%</span>
+              <span class="text-[8px] font-bold text-gray-500 uppercase">SCORE</span>
+            </div>
+          </div>
+          <div class="text-sm">
+            <div class="font-semibold text-gray-800">Profile Readiness</div>
+            <div class="text-gray-500 text-xs">Complete your profile to<br>unlock 100% recruiter visibility</div>
+          </div>
+        </div>
+        <button routerLink="/student/profile" class="btn-primary flex flex-col items-center justify-center py-1.5 px-4 h-full">
+          <div class="flex items-center space-x-1">
+            <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 12l2 2 4-4m6 2a9 9 0 11-18 0 9 9 0 0118 0z"></path></svg>
+            <span>Update Profile</span>
+          </div>
+          <span class="text-[10px] text-blue-200 mt-0.5">Increases profile power</span>
+        </button>
+      </div>
+    </div>
+
+    <!-- Metric Cards -->
+    <div class="grid grid-cols-1 md:grid-cols-4 gap-4">
+      <div class="card">
+        <div class="flex justify-between items-start mb-4">
+          <div class="text-sm font-semibold text-gray-600">Eligible Drives</div>
+          <div class="p-1.5 bg-blue-50 text-primary-600 rounded">
+            <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M21 13.255A23.931 23.931 0 0112 15c-3.183 0-6.22-.62-9-1.745M16 6V4a2 2 0 00-2-2h-4a2 2 0 00-2 2v2m4 6h.01M5 20h14a2 2 0 002-2V8a2 2 0 00-2-2H5a2 2 0 00-2 2v10a2 2 0 002 2z"></path></svg>
+          </div>
+        </div>
+        <div class="flex items-baseline space-x-2">
+          <span class="text-3xl font-bold text-gray-900">{{ dashboardData.metrics.eligible_drives_count }}</span>
+        </div>
+        <div class="text-xs text-gray-500 mt-2">Drives matching your profile</div>
+      </div>
+      
+      <div class="card">
+        <div class="flex justify-between items-start mb-4">
+          <div class="text-sm font-semibold text-gray-600">In Active Pipeline</div>
+          <div class="p-1.5 bg-indigo-50 text-indigo-600 rounded">
+            <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M3 4a1 1 0 011-1h16a1 1 0 011 1v2.586a1 1 0 01-.293.707l-6.414 6.414a1 1 0 00-.293.707V17l-4 4v-6.586a1 1 0 00-.293-.707L3.293 7.293A1 1 0 013 6.586V4z"></path></svg>
+          </div>
+        </div>
+        <div class="flex items-baseline space-x-2 mb-2">
+          <span class="text-3xl font-bold text-gray-900">{{ dashboardData.metrics.active_pipeline_count }}</span>
+          <span class="text-xs text-gray-500">applications tracked</span>
+        </div>
+      </div>
+
+      <div class="card">
+        <div class="flex justify-between items-start mb-4">
+          <div class="text-sm font-semibold text-gray-600">Offers in Hand</div>
+          <div class="p-1.5 bg-green-50 text-green-600 rounded">
+            <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 12l2 2 4-4m6 2a9 9 0 11-18 0 9 9 0 0118 0z"></path></svg>
+          </div>
+        </div>
+        <div class="flex items-baseline space-x-2 mb-2">
+          <span class="text-3xl font-bold text-gray-900">{{ dashboardData.metrics.offers_count }}</span>
+        </div>
+      </div>
+    </div>
+  </ng-container>
+
+</div>

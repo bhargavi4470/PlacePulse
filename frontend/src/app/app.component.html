@@ -1,0 +1,26 @@
+<ng-container *ngIf="isLoggedIn$ | async; else publicLayout">
+  <!-- Authenticated Layout -->
+  <div class="flex h-screen overflow-hidden bg-slate-50 font-sans">
+    
+    <!-- Sidebar -->
+    <app-sidebar class="w-64 flex-shrink-0 border-r border-gray-200 bg-white hidden md:block"></app-sidebar>
+
+    <!-- Main Content Wrapper -->
+    <div class="flex flex-col flex-1 overflow-hidden">
+      
+      <!-- Topbar -->
+      <app-topbar class="h-16 border-b border-gray-200 bg-white flex-shrink-0 z-10"></app-topbar>
+      
+      <!-- Main Scrollable Content -->
+      <main class="flex-1 overflow-y-auto p-4 md:p-6 lg:p-8">
+        <router-outlet></router-outlet>
+      </main>
+
+    </div>
+  </div>
+</ng-container>
+
+<ng-template #publicLayout>
+  <!-- Public Layout (e.g. Login) -->
+  <router-outlet></router-outlet>
+</ng-template>
